@@ -1,21 +1,24 @@
 from flask import Flask
 from dotenv import load_dotenv
 import os
-from core.controllers import register_routes
+from core.controllers import core_routes_init
+from auth.controllers import auth_routes_init
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from db.extensions import db
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL")
-db = SQLAlchemy(app)
+db.init_app(app)
 from auth.models import User
 
 migrate = Migrate(app, db)
 
 
-register_routes(app)
+core_routes_init(app)
+auth_routes_init(app)
 
 DEBUG=True if os.getenv("DEBUG") == 'True' else False
 if __name__ == "__main__":

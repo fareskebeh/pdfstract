@@ -3,10 +3,9 @@ from flask import jsonify, request, make_response
 import pymupdf
 from PIL import Image
 import pytesseract
-from pdf2image import convert_from_bytes
 
 
-def register_routes(app):
+def core_routes_init(app):
     @app.route('/')
     def index():
         return jsonify({"text":"index route"})
