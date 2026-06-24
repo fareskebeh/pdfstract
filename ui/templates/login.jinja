@@ -1,0 +1,12 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+    <div class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
+        <p>New? <a class="font-bold" href="/register">Register</a></p>
+        <form method="POST" action="" class="flex flex-col gap-2">
+        <input placeholder="E-mail" type="email" class="shadow-md border p-2 rounded-md border-neutral-300"/>
+        <input placeholder="Password" type="password" class="shadow-md border p-2 rounded-md border-neutral-300"/>
+        <button class="p-2 text-white bg-orange-500 rounded-md shadow-md">Login</button>
+        </form>
+    </div>
+{% endblock %}

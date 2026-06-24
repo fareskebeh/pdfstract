@@ -6,9 +6,6 @@ import pytesseract
 
 
 def core_routes_init(app):
-    @app.route('/')
-    def index():
-        return jsonify({"text":"index route"})
     
     @app.route("/extract", methods=["POST"])
     def extract_text():
