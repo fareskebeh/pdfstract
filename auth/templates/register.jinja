@@ -3,7 +3,7 @@
 {% block content %}
     <div class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
         <p>Already a user? <a class="font-bold" href="/login">Log in</a></p>
-        <form method="POST" action="" class="flex flex-col gap-2" id="registerForm" novalidate>
+        <form method="POST" action="/register" class="flex flex-col gap-2" id="registerForm" novalidate>
             <input 
                 placeholder="E-mail" 
                 type="email" 
@@ -36,7 +36,7 @@
             />
             <div class="text-red-500 text-sm hidden" id="confirmError">Passwords do not match</div>
             
-            <button type="submit" class="p-2 text-white bg-orange-500 rounded-md shadow-md">Register</button>
+            <button type="submit" class="p-2 text-white bg-orange-500 rounded-md shadow-md cursor-pointer">Register</button>
         </form>
     </div>
     <script>
