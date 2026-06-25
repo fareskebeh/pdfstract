@@ -4,6 +4,7 @@ from db.extensions import db
 import re
 import random
 from flask import session
+from werkzeug.security import generate_password_hash, check_password_hash
 
     
 def generate_code():
@@ -12,6 +13,7 @@ def generate_code():
 def auth_routes_init(app):
     @app.route("/home", methods=["GET"])
     def home():
+        print(f"logged: {session.get('email')}")
         return render_template("home.jinja")
     @app.route("/", methods=["GET"])
     def index():
@@ -37,7 +39,7 @@ def auth_routes_init(app):
                             session['pending_verification_code']=code
                             return redirect("/verify")
                     else:
-                        user= User(email=email, password=password)
+                        user= User(email=email, password_hash=generate_password_hash(password))
                         db.session.add(user)
                         db.session.commit()
                         code=generate_code()
@@ -54,19 +56,20 @@ def auth_routes_init(app):
         if not email:
             return redirect("/")
         if request.method =="POST":
-            code_user=request.form.get("code")
-            code_db = session.get("pending_verification_code")
+            code_user=str(request.form.get("code"))
+            code_db = str(session.get("pending_verification_code"))
 
             print(f"DEBUG: code_user={code_user}, code_db={code_db}") 
             if code_user == code_db:
                 user = User.query.filter_by(email=email).first()
                 if user:
                     user.is_verified = True
-                    user.verification_code = None
                     db.session.commit()
                     session.pop('pending_verification_email', None)
                     session.pop('pending_verification_code', None)
-                    return redirect(url_for('login'))
+                    return redirect("/login")
+            else:
+                return jsonify({"error":"wrong code"})
         return render_template("verify.jinja")
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -74,6 +77,17 @@ def auth_routes_init(app):
         if request.method == 'POST':
             email = request.form['email']
             password = request.form['password']
-            
+            user= User.query.filter_by(email=email).first()
+            if user and user.email == email and check_password_hash(user.password_hash, password):
+                session['email'] = email
+                session['logged_in'] = True
+                return redirect(url_for('home'))
+            else:
+                return jsonify({"error": "Invalid email/password"})
 
         return render_template('login.jinja')
+    
+    @app.route('/logout')
+    def logout():
+        session.clear()
+        return redirect(url_for('home'))

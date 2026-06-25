@@ -2,7 +2,7 @@
 
 {% block content %}
     <div>
-        <form method="POST" action="/verify" class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
+        <form method="POST" action="{{ url_for('verify_email') }}" class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
             <p>Verification email sent</p>
             <input name="code" type="number" placeholder="CODE"/>
             <button class="text-white p-3 rounded-lg bg-orange-500">Verify</button>
