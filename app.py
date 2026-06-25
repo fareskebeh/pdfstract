@@ -10,6 +10,10 @@ load_dotenv()
 
 app = Flask(__name__, template_folder="auth/templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_URL")
+app.config["REMEMBER_COOKIE_SAMESITE"] = os.getenv("REMEMBER_COOKIE_SAMESITE")
+app.config["SESSION_COOKIE_SAMESITE"] = os.getenv("SESSION_COOKIE_SAMESITE")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
 db.init_app(app)
 from auth.models import User
 
