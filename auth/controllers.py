@@ -21,6 +21,8 @@ def auth_routes_init(app):
     
     @app.route('/register', methods=['GET', 'POST'])
     def register():
+        if session.get("email"):
+            return redirect("/home")
         if request.method == 'POST':
             email = request.form['email']
             password = request.form['password']
@@ -54,7 +56,7 @@ def auth_routes_init(app):
     def verify_email():
         email=session.get("pending_verification_email")
         if not email:
-            return redirect("/")
+            return redirect("/home")
         if request.method =="POST":
             code_user=str(request.form.get("code"))
             code_db = str(session.get("pending_verification_code"))
@@ -74,6 +76,8 @@ def auth_routes_init(app):
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
+        if session.get("email"):
+            return redirect("/home")
         if request.method == 'POST':
             email = request.form['email']
             password = request.form['password']
@@ -89,5 +93,7 @@ def auth_routes_init(app):
     
     @app.route('/logout')
     def logout():
+        if session.get("email"):
+            return redirect("/home")
         session.clear()
         return redirect(url_for('home'))
