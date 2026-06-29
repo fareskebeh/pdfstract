@@ -2,17 +2,26 @@
 
 {% block content %}
     <div class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
-
-        <div class="bg-white p-6 w-120 rounded-xl shadow-md border border-neutral-200 flex flex-col gap-4">
-            <p class="text-4xl font-bold">Log In</p>
-            <p class="text-neutral-600">New User? <a class="font-bold text-orange-600 border-b-2 border-dotted" href="/register">Register</a></p>
-            <form method="POST" action="/login" class="flex flex-col gap-4 items-start" id="loginForm" novalidate>
+        <div class="p-6 w-120 rounded-xl shadow-md border flex flex-col gap-4 transition-colors duration-150"
+             :class="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-white border-neutral-200'">
+            
+            <p class="text-4xl font-bold transition-colors duration-150"
+               :class="isDark ? 'text-neutral-200' : 'text-black'">Log In</p>
+            
+            <p class="transition-colors duration-150"
+               :class="isDark ? 'text-neutral-500' : 'text-neutral-600'">
+                New User? 
+                <a class="font-bold text-orange-600 border-b-2 border-dotted hover:opacity-80 transition" href="/register">Register</a>
+            </p>
+            
+            <form method="POST" action="/login" class="flex flex-col gap-4 items-start w-full" id="loginForm" novalidate>
                 <input 
                     placeholder="E-mail" 
                     type="email" 
                     id="email"
                     name="email"
-                    class="shadow-md w-full border focus:border-blue-400 outline-none transition duration-150 p-2 rounded-md border-neutral-300"
+                    class="shadow-md w-full border p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
+                    :class="isDark ? 'bg-neutral-700 text-white placeholder-neutral-400 border-neutral-600' : 'bg-white text-black placeholder-gray-500 border-neutral-300'"
                     required
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                 />
@@ -23,18 +32,22 @@
                     type="password" 
                     id="password"
                     name="password"
-                    class="shadow-md border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150 border-neutral-300"
+                    class="shadow-md border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
+                    :class="isDark ? 'bg-neutral-700 text-white placeholder-neutral-400 border-neutral-600' : 'bg-white text-black placeholder-gray-500 border-neutral-300'"
                     required
                     minlength="1"
                 />
                 <div class="text-red-500 text-sm hidden" id="passwordError">Password is required</div>
                 
-                <a class="text-neutral-600" href="/forgot-password">Forgot Password?</a>
+                <a class="transition-colors duration-150 hover:opacity-80"
+                   :class="isDark ? 'text-neutral-400' : 'text-neutral-600'"
+                   href="/forgot-password">Forgot Password?</a>
 
-                <button type="submit" class="p-2 hover:opacity-90 active:opacity-80 transition duration-150 w-full  text-white  bg-orange-500 rounded-md shadow-md cursor-pointer">Log In</button>
+                <button type="submit" class="p-2 hover:opacity-90 active:opacity-80 transition duration-150 w-full text-white bg-orange-500 hover:bg-orange-600 rounded-md shadow-md cursor-pointer">Log In</button>
             </form>
         </div>
     </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loginForm');
