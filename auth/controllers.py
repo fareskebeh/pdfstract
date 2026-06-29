@@ -13,15 +13,16 @@ def generate_code():
 def auth_routes_init(app):
     @app.route("/home", methods=["GET"])
     def home():
-        print(f"logged: {session.get('email')}")
-        return render_template("home.jinja")
+        is_authenticated= True if session.get("email") else False
+        return render_template("home.jinja", is_authenticated=is_authenticated)
     @app.route("/", methods=["GET"])
     def index():
         return redirect("/home")
     
     @app.route('/register', methods=['GET', 'POST'])
     def register():
-        if session.get("email"):
+        is_authenticated= True if session.get("email") else False
+        if is_authenticated:
             return redirect("/home")
         if request.method == 'POST':
             email = request.form['email']
@@ -76,7 +77,8 @@ def auth_routes_init(app):
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        if session.get("email"):
+        is_authenticated= True if session.get("email") else False
+        if is_authenticated:
             return redirect("/home")
         if request.method == 'POST':
             email = request.form['email']
@@ -93,7 +95,5 @@ def auth_routes_init(app):
     
     @app.route('/logout')
     def logout():
-        if session.get("email"):
-            return redirect("/home")
         session.clear()
         return redirect(url_for('home'))

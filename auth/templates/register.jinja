@@ -2,42 +2,45 @@
 
 {% block content %}
     <div class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
-        <p>Already a user? <a class="font-bold" href="/login">Log in</a></p>
-        <form method="POST" action="/register" class="flex flex-col gap-2" id="registerForm" novalidate>
-            <input 
-                placeholder="E-mail" 
-                type="email" 
-                id="email"
-                name="email"
-                class="shadow-md border p-2 rounded-md border-neutral-300"
-                required
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-            />
-            <div class="text-red-500 text-sm hidden" id="emailError">Please enter a valid email address</div>
-            
-            <input 
-                placeholder="Password" 
-                type="password" 
-                id="password"
-                name="password"
-                class="shadow-md border p-2 rounded-md border-neutral-300"
-                required
-                minlength="8"
-            />
-            <div class="text-red-500 text-sm hidden" id="passwordError">Password must be at least 8 characters</div>
-            
-            <input 
-                placeholder="Confirm Password" 
-                type="password" 
-                id="confirmPassword"
-                name="confirmPassword"
-                class="shadow-md border p-2 rounded-md border-neutral-300"
-                required
-            />
-            <div class="text-red-500 text-sm hidden" id="confirmError">Passwords do not match</div>
-            
-            <button type="submit" class="p-2 text-white bg-orange-500 rounded-md shadow-md cursor-pointer">Register</button>
-        </form>
+        <div class="bg-white p-6 w-120 rounded-xl shadow-md border border-neutral-200 flex flex-col gap-4">
+            <p class="text-4xl font-bold">Register</p>
+            <p class="text-neutral-600">Already a user? <a class="font-bold text-orange-600 border-b-2 border-dotted" href="/login">Log in</a></p>
+            <form method="POST" action="/register" class="flex flex-col gap-4 items-start" id="registerForm" novalidate>
+                <input 
+                    placeholder="E-mail" 
+                    type="email" 
+                    id="email"
+                    name="email"
+                    class="shadow-md w-full border focus:border-blue-400 outline-none transition duration-150 p-2 rounded-md border-neutral-300"
+                    required
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                />
+                <div class="text-red-500 text-sm hidden" id="emailError">Please enter a valid email address</div>
+                
+                <input 
+                    placeholder="Password" 
+                    type="password" 
+                    id="password"
+                    name="password"
+                    class="shadow-md border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150 border-neutral-300"
+                    required
+                    minlength="8"
+                />
+                <div class="text-red-500 text-sm hidden" id="passwordError">Password must be at least 8 characters</div>
+                
+                <input 
+                    placeholder="Confirm Password" 
+                    type="password" 
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    class="shadow-md border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150 border-neutral-300"
+                    required
+                />
+                <div class="text-red-500 text-sm hidden" id="confirmError">Passwords do not match</div>
+                
+                <button type="submit" class="p-2 hover:opacity-90 active:opacity-80 transition duration-150 w-full text-white bg-orange-500 rounded-md shadow-md cursor-pointer">Register</button>
+            </form>
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -73,7 +76,6 @@
                 }
             });
             
-            // Real-time validation for confirm password
             confirmPassword.addEventListener('input', validateConfirmPassword);
             
             function validateConfirmPassword() {
