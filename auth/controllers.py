@@ -97,3 +97,10 @@ def auth_routes_init(app):
     def logout():
         session.clear()
         return redirect(url_for('home'))
+    
+    @app.route('/dashboard')
+    def dashboard():
+        is_authenticated= True if session.get("email") else False
+        if not is_authenticated:
+            return redirect("/home")
+        return render_template("dashboard.jinja", is_authenticated=is_authenticated)
