@@ -1,11 +1,13 @@
 {% extends "base.jinja" %}
 
 {% block content %}
-    <div>
-        <div :class="isDark ? 'text-white' : 'text-neutral-800' " class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
-            dashboard
-
+    <div class="flex *:flex-1 **:transition-colors **:duration-150">
+        <div :class="isDark ? 'text-white border-neutral-800' : 'text-neutral-800 border-neutral-300' " class="border-r p-8 pt-24 space-y-2">
+            <p class="font-black text-3xl">{{ email }}</p>
+            <p :class="isDark ? 'text-neutral-400' : 'text-neutral-600'" class="text-xl">Manage Your API Keys</p>
         </div>
+
+        <div></div>
         
     </div>
 {% endblock %}

@@ -131,4 +131,4 @@ def auth_routes_init(app):
         if not is_authenticated:
             flash("Please log in first", "warning")
             return redirect("/login")
-        return render_template("dashboard.jinja", is_authenticated=is_authenticated)
+        return render_template("dashboard.jinja", is_authenticated=is_authenticated, email=session.get("email"))

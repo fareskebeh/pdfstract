@@ -63,6 +63,9 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+    {% if request.path == "/home" %}
+        {% include 'footer.jinja' %}
+    {% endif %}
 
     <script>
         const isAuthenticated = "{{ is_authenticated }}" === "True";
