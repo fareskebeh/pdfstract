@@ -1,11 +1,119 @@
 {% extends "base.jinja" %}
 
 {% block content %}
-    <div>
-        <div :class="isDark ? 'text-white' : 'text-neutral-800' " class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
-            homepage
+<div class="gap-16 **:transition-colors **:duration-150">
+    <div :class="isDark ? 'text-white' : 'text-neutral-800' "
+        class="p-4 h-dvh flex gap-4 justify-center *:flex-1 *:p-8 items-center">
+        <div class="space-y-4">
+            <p class="text-5xl font-black ">Turn images + PDF files to plain text with one request</p>
+            <p class="text-2xl" :class="isDark ? 'text-neutral-400' : 'text-neutral-600'">My responsive RESTful API will
+                provide OCR capabilities to your app, with a very minimal cost.</p>
+            <a href="{{ '/dashboard' if is_authenticated else '/register' }}"
+                class="text-xl p-3 shadow-sm text-white bg-orange-600 rounded-xl">Get Your API Key</a>
+        </div>
+        <div class="flex flex-col gap-4">
+
+            <div class="flex text-xl gap-4">
+                <div :class="isDark ? 'border-neutral-700' : 'border-neutral-400' "
+                    class="border p-2 rounded-md bg-yellow-100 text-neutral-800">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+                </div>
+            </div>
+
+            <div :class="isDark ? 'border-neutral-700 bg-neutral-800' : 'border-neutral-300' "
+                class="border rounded-xl shadow-sm overflow-hidden flex flex-col gap-1">
+                <div :class="isDark ? 'bg-neutral-900' : 'bg-neutral-200' " class="p-2 flex gap-2 justify-end">
+                    <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                    <div class="w-4 h-4 bg-amber-500 rounded-full"></div>
+                    <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                </div>
+                <div class="flex flex-col gap-1 p-2">
+                    <code>$ curl -X POST https://api.pdfstract.com/extract</code>
+                    <code>-H "Authorization: Bearer YOUR_API_KEY"</code>
+                    <code>-F "file=@test.pdf"</code>
+                </div>
+            </div>
+
+            <div class="shadow-sm flex flex-col gap-1 p-2 rounded-lg border font-mono text-sm"
+                :class="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-neutral-100 border-gray-300'">
+                <div>
+                    <span :class="isDark ? 'text-yellow-400' : 'text-purple-600'">{</span>
+                </div>
+
+                <div class="pl-4">
+                    <span :class="isDark ? 'text-blue-400' : 'text-blue-600'">"status"</span>
+                    <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">:</span>
+                    <span :class="isDark ? 'text-green-400' : 'text-green-600'">"success"</span>
+                    <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">,</span>
+                </div>
+
+                <div class="pl-4">
+                    <span :class="isDark ? 'text-blue-400' : 'text-blue-600'">"data"</span>
+                    <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">:</span>
+                    <span :class="isDark ? 'text-yellow-400' : 'text-purple-600'">{</span>
+                </div>
+
+                <div class="pl-8">
+                    <span :class="isDark ? 'text-blue-400' : 'text-blue-600'">"filename"</span>
+                    <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">:</span>
+                    <span :class="isDark ? 'text-green-400' : 'text-green-600'">"test.pdf"</span>
+                    <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">,</span>
+                </div>
+
+                <div class="pl-8">
+                    <span :class="isDark ? 'text-blue-400' : 'text-blue-600'">"extracted_text"</span>
+                    <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">:</span>
+                    <span :class="isDark ? 'text-green-400' : 'text-green-600'">"Lorem ipsum dolor sit amet, consectetur
+                        adipiscing elit, sed do eiusmod tempor incididunt."</span>
+                </div>
+
+                <div class="pl-4">
+                    <span :class="isDark ? 'text-yellow-400' : 'text-purple-600'">}</span>
+                </div>
+
+                <div>
+                    <span :class="isDark ? 'text-yellow-400' : 'text-purple-600'">}</span>
+                </div>
+            </div>
+
 
         </div>
-        
+
+
+
     </div>
+
+    <div class="p-4 h-dvh flex flex-col gap-12" :class="isDark ? 'text-white' : 'text-neutral-800'">
+        <p class="text-4xl font-black">It even works on images and image PDF files,<br> no matter the quality</p>
+
+        <div class="w-full flex justify-center ">
+            <div class="flex gap-32 items-center">
+                <img src="{{ url_for('static', filename='images/lorem-img.png') }}" />
+
+                <p class="font-black text-3xl tracking-tight  transition-colors duration-150"
+                    :class="isDark ? 'text-white' : 'text-black'">
+                    pdf<span class="text-orange-600">stract</span>
+                </p>
+
+                <div class="flex flex-col gap-1 p-2 rounded-lg border font-mono text-sm"
+                    :class="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-neutral-200 border-gray-200'">
+                    <div>
+                        <span :class="isDark ? 'text-gray-400' : 'text-gray-400'">...</span>
+                    </div>
+
+                    <div class="pl-4">
+                        <span :class="isDark ? 'text-blue-400' : 'text-blue-600'">"extracted_text"</span>
+                        <span :class="isDark ? 'text-gray-400' : 'text-gray-600'">:</span>
+                        <span :class="isDark ? 'text-green-400' : 'text-green-600'">"LOREM IPSUM"</span>
+                    </div>
+
+                    <div>
+                        <span :class="isDark ? 'text-gray-400' : 'text-gray-400'">...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
