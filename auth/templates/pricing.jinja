@@ -1,0 +1,53 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<div class="pt-24 p-8">
+    <p class="text-4xl font-black transition-colors duration-150" 
+       :class="isDark ? 'text-white' : 'text-neutral-800'">PDFstract Pricing</p>
+
+    <div class="w-full p-8 *:text-xl overflow-x-auto">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="transition-colors duration-150" 
+                    :class="isDark ? 'bg-neutral-800 text-white' : 'bg-neutral-300 text-neutral-800'">
+                    <th class="p-3 py-8 text-left">Plan</th>
+                    <th class="p-3 py-8 text-left">Price</th>
+                    <th class="p-3 py-8 text-left">Pages/Month</th>
+                    <th class="p-3 py-8 text-left">Languages</th>
+                    <th class="p-3 py-8 text-left">Rate Limit</th>
+                    <th class="p-3 py-8 text-left">OCR</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                <tr class="border-b transition-colors duration-150 hover:bg-neutral-50" 
+                    :class="isDark ? 'border-neutral-700 hover:bg-neutral-800/50' : 'border-neutral-200 hover:bg-neutral-50'">
+                    <td class="p-3 py-8 font-semibold transition-colors duration-150" 
+                        :class="isDark ? 'text-white' : 'text-neutral-900'">{{ plan.name }}</td>
+                    <td class="p-3 py-8 transition-colors duration-150" 
+                        :class="isDark ? 'text-gray-300' : 'text-neutral-700'">
+                        ${{ (plan.price_cents / 100)|round(2) if plan.price_cents > 0 else 0 }}
+                    </td>
+                    <td class="p-3 py-8 transition-colors duration-150" 
+                        :class="isDark ? 'text-gray-300' : 'text-neutral-700'">
+                        {{ plan.features[0] if plan.features else '—' }}
+                    </td>
+                    <td class="p-3 py-8 transition-colors duration-150" 
+                        :class="isDark ? 'text-gray-300' : 'text-neutral-700'">
+                        {{ plan.features[1] if plan.features else '—' }}
+                    </td>
+                    <td class="p-3 py-8 transition-colors duration-150" 
+                        :class="isDark ? 'text-gray-300' : 'text-neutral-700'">
+                        {{ plan.features[2] if plan.features else '—' }}
+                    </td>
+                    <td class="p-3 py-8 transition-colors duration-150" 
+                        :class="isDark ? 'text-gray-300' : 'text-neutral-700'">
+                        {{ plan.features[3] if plan.features else '—' }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

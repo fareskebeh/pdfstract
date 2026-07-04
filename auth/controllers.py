@@ -5,6 +5,7 @@ import re
 import random
 from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
+from payments.models import Plan
 
 def generate_code():
     return random.randint(0000000, 9999999)
@@ -132,3 +133,9 @@ def auth_routes_init(app):
             flash("Please log in first", "warning")
             return redirect("/login")
         return render_template("dashboard.jinja", is_authenticated=is_authenticated, email=session.get("email"))
+    
+    @app.route('/pricing')
+    def pricing():
+        is_authenticated = True if session.get("email") else False
+        plans = Plan.query.all() or []
+        return render_template("pricing.jinja", plans=plans, is_authenticated=is_authenticated)

@@ -11,6 +11,7 @@ class User(db.Model):
     date_created=db.Column(db.DateTime, default=datetime.now())
     is_verified=db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(255))
+    plan_id = db.Column(db.Integer, db.ForeignKey('plans.id'))
 
     @hybrid_property
     def key_count(self):

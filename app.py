@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from db.extensions import db
 from auth.models import User
 from keymanager.models import ApiKey
+from payments.models import Plan
 
 load_dotenv()
 
