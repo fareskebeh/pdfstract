@@ -52,7 +52,7 @@
                 <a href="/login" class="text-orange-600 hover:opacity-80 transition duration-150">Log In</a>
             </div>
             <a class="priv_link border p-1 rounded-md transition-colors duration-150 shadow-md" href="/dashboard"
-                   :class="isDark ? 'text-neutral-400 bg-neutral-900 border-neutral-800' : 'text-neutral-800 border-neutral-500 bg-neutral-200'">Dashboard</a>
+                   :class="isDark ? 'text-neutral-400 bg-neutral-900 border-neutral-800' : 'text-neutral-500 border-neutral-400 bg-neutral-50'">Dashboard</a>
             <i class="fas w-4 cursor-pointer hover:opacity-70 transition-colors duration-150"
                :class="isDark ? 'fa-moon text-white' : 'fa-sun text-neutral-500'"
                @click="isDark = !isDark; localStorage.setItem('theme', isDark ? 'dark' : 'light')">
