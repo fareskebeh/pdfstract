@@ -1,6 +1,6 @@
 from db.extensions import db
 from auth.models import User
-from flask import session, jsonify, request, render_template, flash, redirect
+from flask import session, jsonify, request, render_template, flash, redirect, make_response
 from .models import ApiKey
 from hashlib import sha256
 import secrets
@@ -37,3 +37,17 @@ def key_routes_init(app):
         else:
             flash('You have reached your API key limit for your current plan.')
             return redirect('/')
+    
+    # @app.route("/keys/verify", methods=["POST"])
+    # def verify_key():
+    #     json_req=request.get_json(force=True)
+
+    #     raw= json_req['key']
+
+    #     query_hash= str(sha256(raw.encode()).hexdigest())
+    #     match=ApiKey.query.filter(ApiKey.key_hash==query_hash).first()
+
+    #     if match:
+    #         return make_response("Found", )
+    #     else:
+    #         return jsonify({"message": "404 not found"})
