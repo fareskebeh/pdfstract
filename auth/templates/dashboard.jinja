@@ -1,14 +1,48 @@
 {% extends "base.jinja" %}
 
 {% block content %}
-    <div class="flex *:flex-1 **:transition-colors **:duration-150">
-        <div :class="isDark ? 'text-white border-neutral-800' : 'text-neutral-800 border-neutral-300' " class="border-r p-8 pt-24 space-y-2">
+    <div class="flex *:flex-1 transition-colors duration-150 h-dvh">
+        <div :class="isDark ? 'text-white border-neutral-800 transition duration-150' : 'text-neutral-800 border-neutral-300' " class="border-r p-8 pt-24 space-y-2">
             <p class="font-black text-3xl">Manage Your API Keys</p>
-            <p :class="isDark ? 'text-neutral-400' : 'text-neutral-600'" class="text-xl">{{ email }}</p>
+            <span :class="isDark ? 'text-neutral-400' : 'text-neutral-600'" class="text-xl">{{ email }}</span>
+            <span class="{{ 'text-green-500 bg-green-500/20' if user.plan_id == 1 else ' bg-indigo-500/20 text-indigo-500' if user.plan_id == 2 else 'text-orange-600 bg-orange-500/20' }} p-2 text-sm rounded-3xl font-bold">{{
+                'Free' if user.plan_id == 1 else 'Starter' if user.plan_id == 2 else 'Pro'
+            }}</span>
+
+            <div class="py-4">
+            {% for k in user_keys %}
+                <div class="p-4 rounded-lg shadow-sm flex items-center justify-between hover:-translate-y-0.5 hover:scale-101 transition duration-150" :class="isDark ? 'bg-neutral-800' : 'bg-white'">
+                    <code>{{k.name}}</code>
+                    
+                    <code :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ k.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</code>
+                    <button>
+                        <i class="fas fa-trash text-red-500 hover:opacity-90 transition duration-150 cursor-pointer"></i>
+                    </button>
+                </div>
+            {% endfor %}
+                
+                {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) %}
+
+                <a href="{{ '/keys/create' if can_create else '/pricing' }}" 
+                class="mt-2 rounded-lg w-full p-4 flex items-center justify-center shadow-md transition duration-150 {{ 'cursor-pointer hover:opacity-90' if can_create }}" 
+                :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'">
+                    {% if not can_create %}
+                    <p>Upgrade to get more keys and quota</p>
+                    {% else %}
+                    <span class="mr-2">Create a new key</span>
+                    <i class="fas fa-plus text-2xl"></i>
+                    {% endif %}
+                </a>
+
+            </div>
         </div>
 
         <div class=" pt-24 p-8" :class="isDark ? 'text-white' : 'text-neutral-800' ">
             <p class="font-black text-3xl">Monitor Usage</p>
+            
+            <div>
+                
+            </div>
         </div>
         
     </div>

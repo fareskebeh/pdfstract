@@ -6,6 +6,7 @@ import random
 from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
 from payments.models import Plan
+from keymanager.models import ApiKey
 
 def generate_code():
     return random.randint(0000000, 9999999)
@@ -132,8 +133,10 @@ def auth_routes_init(app):
         if not is_authenticated:
             flash("Please log in first", "warning")
             return redirect("/login")
-        return render_template("dashboard.jinja", is_authenticated=is_authenticated, email=session.get("email"))
-    
+        user = User.query.filter(User.email==session.get("email")).first()
+        user_keys = ApiKey.query.filter(ApiKey.user_id==user.id)
+        return render_template("dashboard.jinja", is_authenticated=is_authenticated, email=session.get("email"), user_keys=user_keys, user=user)
+
     @app.route('/pricing')
     def pricing():
         is_authenticated = True if session.get("email") else False
