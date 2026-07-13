@@ -22,7 +22,7 @@
             {% endfor %}
                 
                 {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) %}
-
+                {% set limit= (300 if user.plan_id == 1 else 25000 if user.plan_id == 2 else 500000) %}
                 <a href="{{ '/keys/create' if can_create else '/pricing' }}" 
                 class="mt-2 rounded-lg w-full p-4 flex items-center justify-center shadow-md transition duration-150 {{ 'cursor-pointer hover:opacity-90' if can_create }}" 
                 :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'">
@@ -39,9 +39,23 @@
 
         <div class=" pt-24 p-8" :class="isDark ? 'text-white' : 'text-neutral-800' ">
             <p class="font-black text-3xl">Monitor Usage</p>
-            
-            <div>
                 
+            <div class="py-4">
+                <p class="text-2xl font-bold">Quota used</p>
+                <div :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'" class="relative shadow-sm w-full h-2 my-2 rounded-xl">
+                    <div class="absolute bg-orange-600 top-0 left-0 bottom-0 w-[{{(user.master_quota/ limit ) * 100}}%] rounded-xl"></div>
+                </div>
+                <p class="text-xl font-black" :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ user.master_quota }} / {{ limit }} <span class="font-medium">Pages</span></p>
+
+            </div>
+
+            <hr class="mb-8 mt-4 border-neutral-300"/>
+
+            <div>
+                <p class="font-black text-3xl">Usage History</p>
+                <div class="p-2">
+                
+                </div>
             </div>
         </div>
         

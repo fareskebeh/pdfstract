@@ -9,3 +9,4 @@ class Plan(db.Model):
     name= db.Column(db.String(50))
     price_cents = db.Column(db.Integer)
     features=db.Column(JSON)
+    quota_limit=db.Column(db.Integer)

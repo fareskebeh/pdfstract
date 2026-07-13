@@ -38,16 +38,13 @@ def key_routes_init(app):
             flash('You have reached your API key limit for your current plan.')
             return redirect('/')
     
-    # @app.route("/keys/verify", methods=["POST"])
-    # def verify_key():
-    #     json_req=request.get_json(force=True)
+    @app.route('/keys/delete', methods=["POST", "GET"])
+    def delete_key():
+        is_authenticated=True if session.get("email") else False 
+        if not is_authenticated:
+            return jsonify({"message": "Unauthorized to perform this operation"})
+        keyname=request.form.get("name")
 
-    #     raw= json_req['key']
-
-    #     query_hash= str(sha256(raw.encode()).hexdigest())
-    #     match=ApiKey.query.filter(ApiKey.key_hash==query_hash).first()
-
-    #     if match:
-    #         return make_response("Found", )
-    #     else:
-    #         return jsonify({"message": "404 not found"})
+        db.query.model
+        user = User.query.filter(User.email==session.get("email")).first()
+    #split between confirm deletion and delete page
