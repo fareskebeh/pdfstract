@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) %}
+    {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) or (user.plan_id==3 and user.key_count < 20) %}
     {% set limit= (300 if user.plan_id == 1 else 25000 if user.plan_id == 2 else 500000) %}
     {% set percent = (user.master_quota / limit) * 100 %}
     {% set bar_color = 'bg-green-500' %}
@@ -38,26 +38,34 @@
                 'Free' if user.plan_id == 1 else 'Starter' if user.plan_id == 2 else 'Pro'
             }}</span>
 
-            <div class="py-4">
+            <div class="py-4 space-y-2">
                 {% for k in user_keys %}
-                <div class="p-4 rounded-lg shadow-sm flex items-center justify-between hover:-translate-y-0.5 hover:scale-101 transition duration-150" :class="isDark ? 'bg-neutral-800' : 'bg-white'">
+                <div class="p-4 rounded-lg shadow-sm flex items-center *:flex-1 hover:-translate-y-0.5 hover:scale-101 transition duration-150" :class="isDark ? 'bg-neutral-800' : 'bg-white'">
                     <code>{{k.name}}</code>
                     
                     <code :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ k.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</code>
-                    <button @click="showDeleteModal = true; keyToDelete = '{{k.id}}'">
-                        <i class="fas fa-trash text-red-500 hover:opacity-90 transition duration-150 cursor-pointer"></i>
-                    </button>
+                    <div class="flex justify-end">
+                        <button @click="showDeleteModal = true; keyToDelete = '{{k.id}}'">
+                            <i class="fas fa-trash text-red-500 hover:opacity-90 transition duration-150 cursor-pointer"></i>
+                        </button>
+                    </div>
                 </div>
                 {% endfor %}
                 
-                <a href="{{ '/keys/create' if can_create else '/pricing' }}" 
+                <a href="{{ '/keys/create' if can_create else '/pricing' if not (user.plan_id==3 and user.key_count<=20) }}" 
                 class="mt-2 rounded-lg w-full p-4 flex items-center justify-center shadow-md transition duration-150 {{ 'cursor-pointer hover:opacity-90' if can_create }}" 
                 :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'">
-                    {% if not can_create %}
-                    <p>Upgrade to get more keys and quota</p>
-                    {% else %}
+                    {% if can_create %}
                     <span class="mr-2">Create a new key</span>
                     <i class="fas fa-plus text-2xl"></i>
+                    {% else %}
+                    <p>
+                        {% if user.plan_id == 3 %}
+                            You've reached the maximum of 20 keys for your plan
+                        {% else %}
+                            Upgrade to get more keys and quota
+                        {% endif %}
+                    </p>
                     {% endif %}
                 </a>
             </div>
@@ -68,7 +76,7 @@
                 
             <div class="py-4">
                 <p class="text-2xl font-bold">Quota used</p>
-                <div :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'" class="relative transition duration-150 shadow-sm w-full h-2 my-2 rounded-xl">
+                <div :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'" class="overflow-hidden relative transition duration-150 shadow-sm w-full h-2 my-2 rounded-xl">
                     <div class="absolute progress-bar-content {{bar_color}} top-0 left-0 bottom-0 rounded-xl"></div>
                 </div>
                 <p class="text-xl font-black" :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ user.master_quota }} / {{ limit }} <span class="font-medium">Pages</span></p>

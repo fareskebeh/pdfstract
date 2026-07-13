@@ -29,4 +29,4 @@ key_routes_init(app)
 
 DEBUG=True if os.getenv("DEBUG") == 'True' else False
 if __name__ == "__main__":
-    app.run(debug=DEBUG, port=8000)
+    app.run('0.0.0.0',debug=DEBUG, port=8000)

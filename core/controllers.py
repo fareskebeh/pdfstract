@@ -11,7 +11,7 @@ from payments.models import Plan
 from db.extensions import db
 
 def core_routes_init(app):
-    
+
     @app.route("/extract", methods=["POST"])
     def extract_text():
         request_file=request.files.get("pdf")
@@ -50,7 +50,7 @@ def core_routes_init(app):
                     if content:
                         text += content + "pdforge_pagebreak"
                     else:
-                        pix=page.get_pixmap(dpi=200)
+                        pix=page.get_pixmap(dpi=100)
                         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
                         ocr_text = pytesseract.image_to_string(img, lang='eng')
 

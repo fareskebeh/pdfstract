@@ -21,7 +21,7 @@ def key_routes_init(app):
         if not is_authenticated:
             return jsonify({"message": "Unable to create key, requires authentication"})
         user = User.query.filter(User.email==session.get("email")).first()
-        new_keys_available= True if (user.plan_id == 1 and user.key_count <1) or (user.plan_id == 2 and user.key_count <=3) else False
+        new_keys_available= True if (user.plan_id == 1 and user.key_count <1) or (user.plan_id == 2 and user.key_count <=3) or (user.plan_id == 3 and user.key_count<20) else False
         raw=None
         if user and new_keys_available:
 
