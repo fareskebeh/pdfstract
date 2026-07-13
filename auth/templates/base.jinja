@@ -22,9 +22,50 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <title>PDFstract</title>
 </head>
-<body x-data="{ isDark: localStorage.getItem('theme') === 'dark', isAuthenticated: {{ is_authenticated | tojson }}}" 
-      :class="isDark ? 'bg-[#101010]' : 'bg-neutral-100'"
-      class="transition-colors duration-150">
+<body x-data="{ 
+    isDark: localStorage.getItem('theme') === 'dark', 
+    isAuthenticated: {{ is_authenticated | tojson }},
+    showDeleteModal: false,
+    keyToDelete: null,
+    deleteConfirmationText: '',
+    isDeleting: false,
+    confirmDelete() {
+        if (this.deleteConfirmationText === 'delete this key' && !this.isDeleting) {
+            this.isDeleting = true;
+            
+            fetch('/keys/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key_id: this.keyToDelete
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.showDeleteModal = false;
+                this.deleteConfirmationText = '';
+                this.keyToDelete = null;
+                this.isDeleting = false;
+                
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error deleting key:', error);
+                this.isDeleting = false;
+                alert('Failed to delete key. Please try again.');
+            });
+        }
+    }
+}" 
+    :class="isDark ? 'bg-[#101010]' : 'bg-neutral-100'"
+    class="transition-colors duration-150">
     
     <nav class="p-4 fixed top-0 left-0 right-0 gap-8 flex justify-between z-50 border-b transition-colors duration-150"
          :class="isDark ? 'bg-neutral-950 border-b-neutral-800' : 'bg-white border-b-neutral-200'">

@@ -1,8 +1,37 @@
 {% extends "base.jinja" %}
 
 {% block content %}
+
+    {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) %}
+    {% set limit= (300 if user.plan_id == 1 else 25000 if user.plan_id == 2 else 500000) %}
+    {% set percent = (user.master_quota / limit) * 100 %}
+    {% set bar_color = 'bg-green-500' %}
+    {% if percent >= 80 %}
+    {% set bar_color = 'bg-red-600' %}
+    {% elif percent >= 60 %}
+    {% set bar_color = 'bg-orange-600' %}
+    {% elif percent >= 40 %}
+    {% set bar_color = 'bg-amber-500' %}
+    {% endif %}
+
+    <head>
+        <style>
+            @keyframes fill-bar {
+                0% {
+                    width: 0;
+                }
+                100% {
+                    width: {{(user.master_quota/ limit ) * 100}}%;
+                }
+            }
+            .progress-bar-content {
+                animation: fill-bar 2s forwards;
+            }
+        </style>
+    </head>
+
     <div class="flex *:flex-1 transition-colors duration-150 h-dvh">
-        <div :class="isDark ? 'text-white border-neutral-800 transition duration-150' : 'text-neutral-800 border-neutral-300' " class="border-r p-8 pt-24 space-y-2">
+        <div :class="isDark ? 'text-white border-neutral-800 transition duration-150' : 'text-neutral-800 border-neutral-300'" class="border-r p-8 pt-24 space-y-2">
             <p class="font-black text-3xl">Manage Your API Keys</p>
             <span :class="isDark ? 'text-neutral-400' : 'text-neutral-600'" class="text-xl">{{ email }}</span>
             <span class="{{ 'text-green-500 bg-green-500/20' if user.plan_id == 1 else ' bg-indigo-500/20 text-indigo-500' if user.plan_id == 2 else 'text-orange-600 bg-orange-500/20' }} p-2 text-sm rounded-3xl font-bold">{{
@@ -10,19 +39,17 @@
             }}</span>
 
             <div class="py-4">
-            {% for k in user_keys %}
+                {% for k in user_keys %}
                 <div class="p-4 rounded-lg shadow-sm flex items-center justify-between hover:-translate-y-0.5 hover:scale-101 transition duration-150" :class="isDark ? 'bg-neutral-800' : 'bg-white'">
                     <code>{{k.name}}</code>
                     
                     <code :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ k.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</code>
-                    <button>
+                    <button @click="showDeleteModal = true; keyToDelete = '{{k.id}}'">
                         <i class="fas fa-trash text-red-500 hover:opacity-90 transition duration-150 cursor-pointer"></i>
                     </button>
                 </div>
-            {% endfor %}
+                {% endfor %}
                 
-                {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) %}
-                {% set limit= (300 if user.plan_id == 1 else 25000 if user.plan_id == 2 else 500000) %}
                 <a href="{{ '/keys/create' if can_create else '/pricing' }}" 
                 class="mt-2 rounded-lg w-full p-4 flex items-center justify-center shadow-md transition duration-150 {{ 'cursor-pointer hover:opacity-90' if can_create }}" 
                 :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'">
@@ -33,31 +60,72 @@
                     <i class="fas fa-plus text-2xl"></i>
                     {% endif %}
                 </a>
-
             </div>
         </div>
 
-        <div class=" pt-24 p-8" :class="isDark ? 'text-white' : 'text-neutral-800' ">
+        <div class="pt-24 p-8" :class="isDark ? 'text-white' : 'text-neutral-800'">
             <p class="font-black text-3xl">Monitor Usage</p>
                 
             <div class="py-4">
                 <p class="text-2xl font-bold">Quota used</p>
-                <div :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'" class="relative shadow-sm w-full h-2 my-2 rounded-xl">
-                    <div class="absolute bg-orange-600 top-0 left-0 bottom-0 w-[{{(user.master_quota/ limit ) * 100}}%] rounded-xl"></div>
+                <div :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'" class="relative transition duration-150 shadow-sm w-full h-2 my-2 rounded-xl">
+                    <div class="absolute progress-bar-content {{bar_color}} top-0 left-0 bottom-0 rounded-xl"></div>
                 </div>
                 <p class="text-xl font-black" :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ user.master_quota }} / {{ limit }} <span class="font-medium">Pages</span></p>
-
             </div>
 
-            <hr class="mb-8 mt-4 border-neutral-300"/>
+            <hr :class="isDark ? 'border-neutral-800' : 'border-neutral-300'" class="mb-8 transition duration-150 mt-4"/>
 
             <div>
                 <p class="font-black text-3xl">Usage History</p>
                 <div class="p-2">
-                
+                    <canvas id="myChart"></canvas>
                 </div>
             </div>
         </div>
-        
     </div>
+
+    <div x-show="showDeleteModal" 
+         x-cloak 
+         x-transition.opacity.duration.300ms
+         class="absolute flex items-center justify-center inset-0 bg-black/40 z-999"
+         @click.away="showDeleteModal = false">
+        <div class="shadow-sm p-8 flex flex-col gap-2 rounded-3xl border" 
+             :class="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-100 border-neutral-300'"
+             @click.stop>
+            <p class="text-3xl font-bold" :class="isDark ? 'text-neutral-100' : 'text-neutral-800'">Confirm Key Deletion?</p>
+            <p :class="isDark ? 'text-neutral-400' : 'text-neutral-500'">If you wish to delete this key, type <strong>delete this key</strong> in the box below</p>
+            <p class="text-red-500">This action cannot be undone!</p>
+            <input 
+                x-model="deleteConfirmationText"
+                placeholder="Type here" 
+                type="text" 
+                class="shadow-md my-2 border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
+                :class="isDark ? 'bg-neutral-800 text-white placeholder-neutral-400 border-neutral-700' : 'bg-white text-black placeholder-gray-500 border-neutral-300'"
+                required
+                minlength="1"
+            />
+
+            <div class="*:p-2 flex *:flex-1 *:text-xl gap-2 *:cursor-pointer">
+                <button @click="confirmDelete()" 
+                        class="bg-red-500 text-white rounded-md hover:opacity-90 transition duration-150"
+                        :disabled="deleteConfirmationText !== 'delete this key'"
+                        :class="deleteConfirmationText !== 'delete this key' ? 'opacity-50 cursor-not-allowed' : ''">
+                    Confirm
+                </button>
+                <button @click="showDeleteModal = false" 
+                        :class="isDark ? 'hover:bg-neutral-700 text-neutral-300' : 'hover:bg-neutral-200 text-neutral-600'"
+                        class="rounded-md transition duration-150" 
+                        type="button">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 {% endblock %}

@@ -38,13 +38,33 @@ def key_routes_init(app):
             flash('You have reached your API key limit for your current plan.')
             return redirect('/')
     
-    @app.route('/keys/delete', methods=["POST", "GET"])
+    @app.route('/keys/delete', methods=["POST"])
     def delete_key():
-        is_authenticated=True if session.get("email") else False 
+        is_authenticated = True if session.get("email") else False 
         if not is_authenticated:
-            return jsonify({"message": "Unauthorized to perform this operation"})
-        keyname=request.form.get("name")
-
-        db.query.model
-        user = User.query.filter(User.email==session.get("email")).first()
-    #split between confirm deletion and delete page
+            return jsonify({"message": "Unauthorized to perform this operation"}), 401
+        
+        try:
+            data = request.get_json()
+            if not data:
+                return jsonify({"message": "Invalid request data"}), 400
+            key_id = data.get("key_id")
+            if not key_id:
+                return jsonify({"message": "Key ID is required"}), 400
+            user_email = session.get("email")
+            user = User.query.filter_by(email=user_email).first()
+            if not user:
+                return jsonify({"message": "User not found"}), 404
+            key = ApiKey.query.filter_by(id=key_id, user_id=user.id).first()
+            if not key:
+                return jsonify({"message": "Key not found or you don't have permission to delete it"}), 404
+            db.session.delete(key)
+            db.session.commit()
+            return jsonify({
+                "message": "Key deleted successfully",
+                "key_id": key_id,
+                "success": True
+            }), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": f"Error deleting key: {str(e)}"}), 500
