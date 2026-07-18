@@ -1,8 +1,8 @@
-"""Initial migration
+"""moved to cloud postgres
 
-Revision ID: 971142b46d56
+Revision ID: 96f33e8ffbaf
 Revises: 
-Create Date: 2026-07-06 14:58:48.857408
+Create Date: 2026-07-18 23:37:27.697438
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '971142b46d56'
+revision = '96f33e8ffbaf'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,6 +23,7 @@ def upgrade():
     sa.Column('name', sa.String(length=50), nullable=True),
     sa.Column('price_cents', sa.Integer(), nullable=True),
     sa.Column('features', sa.JSON(), nullable=True),
+    sa.Column('quota_limit', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -32,7 +33,8 @@ def upgrade():
     sa.Column('date_created', sa.DateTime(), nullable=True),
     sa.Column('is_verified', sa.Boolean(), nullable=True),
     sa.Column('password_hash', sa.String(length=255), nullable=True),
-    sa.Column('plan_id', sa.Integer(), nullable=True),
+    sa.Column('plan_id', sa.Integer(), nullable=False),
+    sa.Column('master_quota', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['plan_id'], ['plans.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
