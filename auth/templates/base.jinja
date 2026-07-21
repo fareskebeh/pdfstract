@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             -webkit-font-smoothing: antialiased;
@@ -17,6 +19,7 @@
             }
         })();
     </script>
+    <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -67,16 +70,16 @@
     :class="isDark ? 'bg-[#101010]' : 'bg-neutral-100'"
     class="transition-colors duration-150">
     
-    <nav class="p-4 fixed top-0 left-0 right-0 gap-8 flex justify-between z-50 border-b transition-colors duration-150"
+    <nav class="p-4 fixed top-0 left-0 right-0 gap-4 sm:gap-8 flex justify-between z-50 border-b transition-colors duration-150"
          :class="isDark ? 'bg-neutral-950 border-b-neutral-800' : 'bg-white border-b-neutral-200'">
         
-        <div class="flex gap-12">
+        <div class="flex gap-8 items-center">
             <a href="/" class="font-black tracking-tight text-xl transition-colors duration-150"
                :class="isDark ? 'text-white' : 'text-black'">
                 pdf<span class="text-orange-600">stract</span>
             </a>
 
-            <div class="flex items-center gap-12">
+            <div class="flex items-center gap-8">
                 <a href="/docs" class="transition-colors duration-150"
                    :class="isDark ? 'text-neutral-200' : 'text-neutral-800'">Docs</a>
                 <a href="/pricing" class="transition-colors duration-150"
@@ -87,10 +90,10 @@
 
         <div class="flex items-center gap-4">
             <div class="space-x-2" :class="isAuthenticated ? 'hidden' : ''">
-                <a href="/register" class="bg-orange-600 text-white p-2 rounded-lg shadow-md hover:opacity-90 transition duration-150">Get Started</a>
-                <span class="transition-colors duration-150"
+                <a href="/register" class="bg-orange-600 text-sm sm:text-base text-white p-2 rounded-lg shadow-md hover:opacity-90 transition duration-150">Get Started</a>
+                <span class="transition-colors sm:inline-block duration-150 hidden"
                       :class="isDark ? 'text-neutral-400' : 'text-neutral-600'">or</span>
-                <a href="/login" class="text-orange-600 hover:opacity-80 transition duration-150">Log In</a>
+                <a href="/login" class="hidden sm:inline-block text-orange-600 hover:opacity-80 transition duration-150">Log In</a>
             </div>
             <a class="priv_link border p-1 rounded-md transition-colors duration-150 shadow-md" href="/dashboard"
                    :class="isDark ? 'text-neutral-400 bg-neutral-900 border-neutral-800' : 'text-neutral-500 border-neutral-400 bg-neutral-50'">Dashboard</a>

@@ -2,13 +2,13 @@
 
 {% block content %}
     <div class="p-4 h-dvh flex flex-col gap-4 justify-center items-center">
-        <div class="p-6 w-120 rounded-xl shadow-md border flex flex-col gap-4 transition-colors duration-150"
+        <div class="p-6 w-80 sm:w-120 rounded-xl shadow-md border flex flex-col gap-4 transition-colors duration-150"
              :class="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-white border-neutral-200'">
             
             <p class="text-4xl font-bold transition-colors duration-150"
                :class="isDark ? 'text-neutral-200' : 'text-black'">Register</p>
             
-            <p class="transition-colors duration-150"
+            <p class="transition-colors duration-150 text-lg sm:text-base"
                :class="isDark ? 'text-neutral-500' : 'text-neutral-600'">
                 Already a user? 
                 <a class="font-bold text-orange-600 border-b-2 border-dotted hover:opacity-80 transition" href="/login">Log in</a>
@@ -20,7 +20,7 @@
                     type="email" 
                     id="email"
                     name="email"
-                    class="shadow-md w-full border p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
+                    class="shadow-md w-full border p-2 rounded-md focus:border-blue-400 outline-none transition duration-150 text-xl sm:text-base"
                     :class="isDark ? 'bg-neutral-700 text-white placeholder-neutral-400 border-neutral-600' : 'bg-white text-black placeholder-gray-500 border-neutral-300'"
                     required
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
@@ -32,7 +32,7 @@
                     type="password" 
                     id="password"
                     name="password"
-                    class="shadow-md border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
+                    class="shadow-md text-xl sm:text-base border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
                     :class="isDark ? 'bg-neutral-700 text-white placeholder-neutral-400 border-neutral-600' : 'bg-white text-black placeholder-gray-500 border-neutral-300'"
                     required
                     minlength="8"
@@ -44,13 +44,13 @@
                     type="password" 
                     id="confirmPassword"
                     name="confirmPassword"
-                    class="shadow-md border w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
+                    class="shadow-md border text-xl sm:text-base w-full p-2 rounded-md focus:border-blue-400 outline-none transition duration-150"
                     :class="isDark ? 'bg-neutral-700 text-white placeholder-neutral-400 border-neutral-600' : 'bg-white text-black placeholder-gray-500 border-neutral-300'"
                     required
                 />
                 <div class="text-red-500 text-sm hidden" id="confirmError">Passwords do not match</div>
                 
-                <button type="submit" class="p-2 hover:opacity-90 active:opacity-80 transition duration-150 w-full text-white bg-orange-600 hover:opacity-90 rounded-md shadow-md cursor-pointer">Register</button>
+                <button type="submit" class="text-xl sm:text-base p-2 hover:opacity-90 active:opacity-80 transition duration-150 w-full text-white bg-orange-600 hover:opacity-90 rounded-md shadow-md cursor-pointer">Register</button>
             </form>
         </div>
     </div>
