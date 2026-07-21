@@ -142,3 +142,21 @@ def auth_routes_init(app):
         is_authenticated = True if session.get("email") else False
         plans = Plan.query.all() or []
         return render_template("pricing.jinja", plans=plans, is_authenticated=is_authenticated)
+
+    @app.route('/forgot-password', methods=['GET', 'POST'])
+    def forgot_pw():
+        is_authenticated = True if session.get("email") else False
+        if request.method == 'POST':
+            email = request.form['email']
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                flash("This user does not exist, please create an account", "error")
+                return redirect('/forgot-password')
+            if not user.is_verified:
+                flash("Verify this account before attempting to reset password", "error")
+                return redirect('/forgot-password')
+            # now ima add a tokens model probably, add one to db then check ownership, idk, till next time
+            # TODO: CHECK EVERYTHING
+
+
+        return render_template('forgot-password.jinja', is_authenticated=is_authenticated)
