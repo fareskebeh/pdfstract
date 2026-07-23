@@ -1,5 +1,5 @@
 from flask import jsonify, render_template, request, redirect, make_response, url_for, flash
-from .models import User
+from .models import User, ResetToken
 from db.extensions import db
 import re
 import random
@@ -7,6 +7,8 @@ from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
 from payments.models import Plan
 from keymanager.models import ApiKey
+from hashlib import sha256
+import secrets
 
 def generate_code():
     return random.randint(0000000, 9999999)
@@ -87,6 +89,7 @@ def auth_routes_init(app):
                     return redirect("/register")
             else:
                 flash("Invalid verification code", "error")
+                return redirect('/verify')
         
         return render_template("verify.jinja", is_authenticated=True if email else False)
 
@@ -134,6 +137,9 @@ def auth_routes_init(app):
             flash("Please log in first", "warning")
             return redirect("/login")
         user = User.query.filter(User.email==session.get("email")).first()
+        if not user:
+            session.clear()
+            return redirect("/")
         user_keys = ApiKey.query.filter(ApiKey.user_id==user.id)
         return render_template("dashboard.jinja", is_authenticated=is_authenticated, email=session.get("email"), user_keys=user_keys, user=user)
 
@@ -155,8 +161,49 @@ def auth_routes_init(app):
             if not user.is_verified:
                 flash("Verify this account before attempting to reset password", "error")
                 return redirect('/forgot-password')
-            # now ima add a tokens model probably, add one to db then check ownership, idk, till next time
-            # TODO: CHECK EVERYTHING
-
+            flash("Email sent, Check your inbox", "success")
+            url_token = secrets.token_urlsafe(32)
+            token = ResetToken(user_id=user.id, hash=sha256(url_token.encode()).hexdigest())
+            print(f"RESET LINK: http://127.0.0.1:8000/reset-password?token={url_token}")
+            #I will replace the one above w a email, for prod
+            db.session.add(token)
+            db.session.commit()
 
         return render_template('forgot-password.jinja', is_authenticated=is_authenticated)
+    
+    @app.route('/reset-password', methods=['GET', 'POST'])
+    def reset_password():
+        is_authenticated = True if session.get("email") else False
+        
+        token = request.args.get('token')
+        if token:
+            query_hash= str(sha256(token.encode()).hexdigest())
+            match = ResetToken.query.filter_by(hash=query_hash).first()
+            if not match or match.used:
+                #TODO: placeholder for error msg/page
+                return redirect('/')
+            else:
+                if request.method=='GET':
+                    user = User.query.filter_by(id=match.user_id).first()
+                    if not user:
+                        flash('User not found')
+                        return redirect('/login')
+                    return render_template('reset-password.jinja', is_authenticated=is_authenticated)
+                elif request.method=='POST':
+                    new_pw= request.form['password1']
+                    new_pw_hash= generate_password_hash(new_pw)
+                    user = User.query.filter_by(id=match.user_id).first()
+                    if not user:
+                        flash('User not found')
+                        return redirect('/login')
+                    old_pw= user.password_hash
+                    print(f"{old_pw} \n {new_pw_hash}")
+                    if check_password_hash(user.password_hash, new_pw):
+                        flash('Password cannot be the same as old password')
+                        return redirect(f'/reset-password?token={token}')
+                    else:
+                        match.used= True
+                        user.password_hash= new_pw_hash
+                        db.session.commit()
+                        flash('Password successfully reset', 'success')
+                        return redirect('/login')

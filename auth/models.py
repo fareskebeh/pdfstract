@@ -1,5 +1,5 @@
 from db.extensions import db
-from datetime import datetime
+from datetime import datetime, timedelta
 from keymanager.models import ApiKey
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -17,3 +17,12 @@ class User(db.Model):
     @hybrid_property
     def key_count(self):
         return db.session.query(db.func.count(ApiKey.id)).filter(ApiKey.user_id == self.id).scalar()
+    
+class ResetToken(db.Model):
+    __tablename__ = 'reset_tokens'
+    id= db.Column(db.Integer, primary_key=True)
+    hash = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date_created=db.Column(db.DateTime, default=datetime.now())
+    expires_at = db.Column(db.DateTime, default=datetime.now() + timedelta(hours=1))
+    used = db.Column(db.Boolean, default=False)
