@@ -13,7 +13,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(255))
     plan_id = db.Column(db.Integer, db.ForeignKey('plans.id'), nullable=False, default=1)
     master_quota = db.Column(db.Integer, default=0)
-
+    preferred_language= db.Column(db.String, nullable=False, default='en')
+    preferred_theme = db.Column(db.String, nullable=False, default='dark')
     @hybrid_property
     def key_count(self):
         return db.session.query(db.func.count(ApiKey.id)).filter(ApiKey.user_id == self.id).scalar()

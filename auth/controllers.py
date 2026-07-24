@@ -207,3 +207,42 @@ def auth_routes_init(app):
                         db.session.commit()
                         flash('Password successfully reset', 'success')
                         return redirect('/login')
+                    
+    @app.route('/settings', methods=['GET'])
+    def settings_get():
+        email = session.get('email')
+        if not email:
+            return redirect('/')
+        
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return redirect('/')
+        
+        return render_template('settings.jinja', 
+            is_authenticated=True, 
+            preferred_language=str(user.preferred_language), 
+            preferred_theme=str(user.preferred_theme)
+        )
+
+    @app.route('/settings', methods=['POST'])
+    def settings_post():
+        email = session.get('email')
+        if not email:
+            return redirect('/')
+        
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return redirect('/')
+        
+        new_theme = request.form.get('theme_pref')
+        new_lang = request.form.get('lang_pref')
+        
+        if new_theme and new_theme != user.preferred_theme:
+            user.preferred_theme = new_theme
+        
+        if new_lang and new_lang != user.preferred_language:
+            user.preferred_language = new_lang
+        
+        db.session.commit()
+        
+        return redirect('/settings')
