@@ -146,9 +146,50 @@ def auth_routes_init(app):
     @app.route('/pricing')
     def pricing():
         is_authenticated = True if session.get("email") else False
-        plans = Plan.query.all() or []
+    
+        plans = [
+            {
+                "name": "Free",
+                "price_cents": 0,
+                "features": [
+                    "300 pages/month",
+                    "1 language supported (English)",
+                    "10 requests/minute",
+                    "No OCR"
+                ],
+                "quota": 300,
+                "popular": False,
+                "enterprise": False
+            },
+            {
+                "name": "Starter",
+                "price_cents": 2900,
+                "features": [
+                    "25,000 pages/month",
+                    "10 languages supported",
+                    "60 requests/minute",
+                    "Basic OCR"
+                ],
+                "quota": 25000,
+                "popular": True,
+                "enterprise": False
+            },
+            {
+                "name": "Pro",
+                "price_cents": 9900,
+                "features": [
+                    "500,000 pages/month",
+                    "100+ languages supported",
+                    "300 requests/minute",
+                    "Advanced AI extraction"
+                ],
+                "quota": 500000,
+                "popular": False,
+                "enterprise": True
+            }
+        ]
+        
         return render_template("pricing.jinja", plans=plans, is_authenticated=is_authenticated)
-
     @app.route('/forgot-password', methods=['GET', 'POST'])
     def forgot_pw():
         is_authenticated = True if session.get("email") else False
@@ -220,29 +261,4 @@ def auth_routes_init(app):
         
         return render_template('settings.jinja', 
             is_authenticated=True, 
-            preferred_language=str(user.preferred_language), 
-            preferred_theme=str(user.preferred_theme)
         )
-
-    @app.route('/settings', methods=['POST'])
-    def settings_post():
-        email = session.get('email')
-        if not email:
-            return redirect('/')
-        
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            return redirect('/')
-        
-        new_theme = request.form.get('theme_pref')
-        new_lang = request.form.get('lang_pref')
-        
-        if new_theme and new_theme != user.preferred_theme:
-            user.preferred_theme = new_theme
-        
-        if new_lang and new_lang != user.preferred_language:
-            user.preferred_language = new_lang
-        
-        db.session.commit()
-        
-        return redirect('/settings')
