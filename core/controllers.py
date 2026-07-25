@@ -1,22 +1,21 @@
 import io
-from flask import jsonify, request, make_response
-import pymupdf
-from PIL import Image
-import pytesseract
-from hashlib import sha256
-import secrets
-from keymanager.models import ApiKey
+import os
 from auth.models import User
-from payments.models import Plan
-from db.extensions import db
+from keymanager.models import ApiKey
+from hashlib import sha256
+from flask import request, jsonify, make_response
+from uuid import uuid4
+from .tasks import extract_text
+from .redis import ocr_queue
+from rq.job import Job
+from .redis import rd
+
 
 def core_routes_init(app):
 
     @app.route("/extract", methods=["POST"])
-    def extract_text():
+    def extract_head():
         request_file=request.files.get("pdf")
-        
-        
         if not request_file:
             return make_response(jsonify({"error": "No file(s) attached"}), 400)    
 
@@ -30,38 +29,37 @@ def core_routes_init(app):
             query_hash= str(sha256(key.encode()).hexdigest())
             match=ApiKey.query.filter(ApiKey.key_hash==query_hash).first()
             if match:
-                
-                file = request_file.read()
-                pdf_stream = io.BytesIO(file)
-                doc = pymupdf.open(stream=pdf_stream, filetype="pdf")
-                user= User.query.get(match.user_id)
-                user_plan= Plan.query.get(user.plan_id)
-                if user.master_quota >= user_plan.quota_limit:
-                    return make_response({"message": "Limit has been reached, Upgrade your plan or wait until the quota resets"}, 429)
-                elif user_plan.quota_limit < user.master_quota + len(doc):
-                    return make_response({"message": "You do not have enough quota to process this file, Upgrade your plan or wait until the quota resets"}, 429)
-                
-                text = ""
-                
-                user.master_quota += len(doc)
-                db.session.commit()
-                for page in doc:
-                    content= page.get_text()
-                    if content:
-                        text += content + "pdforge_pagebreak"
-                    else:
-                        pix=page.get_pixmap(dpi=100)
-                        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                        ocr_text = pytesseract.image_to_string(img, lang='eng')
+                job_id=uuid4().hex
+                temp_path = f"/tmp/{job_id}.pdf"
 
-                        if ocr_text:
-                            text+=ocr_text
-                        else:
-                            break
-                    
-                page_lst=text.split("pdforge_pagebreak")
-                return jsonify({"text": page_lst})
+                request_file.save(temp_path)
+                job = ocr_queue.enqueue(
+                    extract_text,
+                    temp_path,
+                    match.user_id
+                )
+                return {
+                    "job_id": job.id,
+                    "status": "queued",
+                    "message": "Processing started"
+                }   
             else:
                 return make_response("Invalid Key", 401)
         else:
             return make_response("Unauthorized", 401)
+        
+    @app.route('/status/<job_id>', methods=['GET'])
+    def ocr_status(job_id):
+        job = Job.fetch(job_id, connection=rd)
+
+        if job.is_finished:
+            return {
+                "status": "done",
+                "result": job.result
+            }
+        elif job.is_queued:
+            return {"status": "queued"}
+        elif job.is_started:
+            return {"status": "processing"}
+        else:
+            return {"status": "not_found"}, 404
