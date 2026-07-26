@@ -18,8 +18,7 @@ def extract_text(fp, user_id):
     session = Session()
     try:
         with open(fp, 'rb') as f:
-            pdf_stream = io.BytesIO(f.read())
-            doc = pymupdf.open(stream=pdf_stream, filetype="pdf")
+            doc = pymupdf.open(fp, filetype="pdf")
             
             user = session.query(User).get(user_id)
             if not user:
@@ -38,7 +37,7 @@ def extract_text(fp, user_id):
                 if content:
                     text += content + "pdforge_pagebreak"
                 else:
-                    pix = page.get_pixmap(dpi=100)
+                    pix = page.get_pixmap(dpi=128)
                     img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
                     ocr_text = pytesseract.image_to_string(img, lang='eng')
                     if ocr_text:

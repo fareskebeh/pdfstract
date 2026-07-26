@@ -9,6 +9,7 @@ from .tasks import extract_text
 from .redis import ocr_queue
 from rq.job import Job
 from .redis import rd
+from rq.exceptions import NoSuchJobError
 
 
 def core_routes_init(app):
@@ -50,16 +51,17 @@ def core_routes_init(app):
         
     @app.route('/status/<job_id>', methods=['GET'])
     def ocr_status(job_id):
-        job = Job.fetch(job_id, connection=rd)
+        try:
+            job = Job.fetch(job_id, connection=rd)
 
-        if job.is_finished:
-            return {
-                "status": "done",
-                "result": job.result
-            }
-        elif job.is_queued:
-            return {"status": "queued"}
-        elif job.is_started:
-            return {"status": "processing"}
-        else:
+            if job.is_finished:
+                return {
+                    "status": "done",
+                    "result": job.result
+                }
+            elif job.is_queued:
+                return {"status": "queued"}
+            elif job.is_started:
+                return {"status": "processing"}
+        except NoSuchJobError:
             return {"status": "not_found"}, 404
