@@ -21,22 +21,17 @@ def key_routes_init(app):
         if not is_authenticated:
             return jsonify({"message": "Unable to create key, requires authentication"})
         user = User.query.filter(User.email==session.get("email")).first()
-        new_keys_available= True if (user.plan_id == 1 and user.key_count <1) or (user.plan_id == 2 and user.key_count <=3) or (user.plan_id == 3 and user.key_count<20) else False
-        raw=None
-        if user and new_keys_available:
-
-            raw=secrets.token_urlsafe(32)
-            key = ApiKey(
-                key_hash= sha256(raw.encode()).hexdigest(),
-                name=nm.encode(raw, sep='-'),
-                user_id=user.id,
-            )
-            db.session.add(key)
-            db.session.commit()
-            return render_template('create_key.jinja', name=key.name if key else '', raw=raw, is_authenticated=is_authenticated)
-        else:
-            flash('You have reached your API key limit for your current plan.')
-            return redirect('/')
+        if not user:
+            return redirect("/")
+        raw=secrets.token_urlsafe(32)
+        key = ApiKey(
+            key_hash= sha256(raw.encode()).hexdigest(),
+            name=nm.encode(raw, sep='-'),
+            user_id=user.id,
+        )
+        db.session.add(key)
+        db.session.commit()
+        return render_template('create_key.jinja', name=key.name if key else '', raw=raw, is_authenticated=is_authenticated)
     
     @app.route('/keys/delete', methods=["POST"])
     def delete_key():
