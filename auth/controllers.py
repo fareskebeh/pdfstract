@@ -146,49 +146,8 @@ def auth_routes_init(app):
     @app.route('/pricing')
     def pricing():
         is_authenticated = True if session.get("email") else False
-    
-        plans = [
-            {
-                "name": "Free",
-                "price_cents": 0,
-                "features": [
-                    "300 pages/month",
-                    "1 language supported (English)",
-                    "10 requests/minute",
-                    "No OCR"
-                ],
-                "quota": 300,
-                "popular": False,
-                "enterprise": False
-            },
-            {
-                "name": "Starter",
-                "price_cents": 2900,
-                "features": [
-                    "25,000 pages/month",
-                    "10 languages supported",
-                    "60 requests/minute",
-                    "Basic OCR"
-                ],
-                "quota": 25000,
-                "popular": True,
-                "enterprise": False
-            },
-            {
-                "name": "Pro",
-                "price_cents": 9900,
-                "features": [
-                    "500,000 pages/month",
-                    "100+ languages supported",
-                    "300 requests/minute",
-                    "Advanced AI extraction"
-                ],
-                "quota": 500000,
-                "popular": False,
-                "enterprise": True
-            }
-        ]
-        
+
+        plans = Plan.query.all()
         return render_template("pricing.jinja", plans=plans, is_authenticated=is_authenticated)
     @app.route('/forgot-password', methods=['GET', 'POST'])
     def forgot_pw():

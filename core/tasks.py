@@ -35,7 +35,7 @@ def extract_text(fp, user_id):
             for page in doc:
                 content = page.get_text()
                 if content:
-                    text += content + "pdforge_pagebreak"
+                    text += content + "pagebreak_pagebreak"
                 else:
                     pix = page.get_pixmap(dpi=128)
                     img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
@@ -46,7 +46,7 @@ def extract_text(fp, user_id):
             user.master_quota += len(doc)
             session.commit()
             
-            page_lst = text.split("pdforge_pagebreak")
+            page_lst = text.split("pagebreak_pagebreak")
             return {"text": page_lst}
     except Exception as e:
         session.rollback()
