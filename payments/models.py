@@ -8,5 +8,6 @@ class Plan(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     name= db.Column(db.String(50))
     price_cents = db.Column(db.Integer)
+    overage=db.Column(db.String(128))
     features=db.Column(JSON)
     quota_limit=db.Column(db.Integer)
