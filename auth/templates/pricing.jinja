@@ -1,38 +1,7 @@
 {% extends "base.jinja" %}
 
 {% block content %}
-
-<style>
-    /*
-Source - https://stackoverflow.com/a/26148146
-Posted by PRB, modified by community. See post 'Timeline' for change history
-Retrieved 2026-07-06, License - CC BY-SA 4.0
-*/
-
-    .fire {
-        animation: burn 1.5s linear infinite alternate;
-    }
-
-    @keyframes burn {
-        from {
-            box-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .4em #ffae34, .2em -.3em .3em #ec760c, -.2em -.4em .4em #cd4606, .1em -.5em .7em #973716, .1em -.7em .7em #451b0e;
-        }
-
-        45% {
-            box-shadow: .1em -.2em .5em #fefcc9, .15em 0 .4em #feec85, -.1em -.25em .5em #ffae34, .15em -.45em .5em #ec760c, -.1em -.5em .6em #cd4606, 0 -.8em .6em #973716, .2em -1em .8em #451b0e;
-        }
-
-        70% {
-            box-shadow: -.1em 0 .3em #fefcc9, .1em -.1em .3em #feec85, -.2em -.2em .6em #ffae34, .2em -.3em .4em #ec760c, -.2em -.4em .7em #cd4606, .1em -.5em .7em #973716, .1em -.7em .9em #451b0e;
-        }
-
-        to {
-            box-shadow: -.1em -.2em .6em #fefcc9, -.15em 0 .6em #feec85, .1em -.25em .6em #ffae34, -.15em -.45em .5em #ec760c, .1em -.5em .6em #cd4606, 0 -.8em .6em #973716, -.2em -1em .8em #451b0e;
-        }
-    }
-</style>
-
-<div class="pt-24 p-8 flex flex-col sm:gap-12 gap-8">
+<div class="pt-24 p-8 flex flex-col sm:gap-10 gap-8">
     <div class="text-center ">
         <p class="text-4xl font-black transition-colors duration-150"
             :class="isDark ? 'text-white' : 'text-neutral-800'">
@@ -45,9 +14,9 @@ Retrieved 2026-07-06, License - CC BY-SA 4.0
 
     </div>
 
-    <div class="h-full w-full flex flex-col sm:flex-row justify-center sm:px-12 *:flex-1 gap-8 sm:gap-12 ">
+    <div class="h-full w-full flex flex-col sm:flex-row justify-center sm:px-12 *:flex-1 gap-8 sm:gap-10 ">
         {% for plan in plans %}
-            <div :class="isDark ? 'bg-neutral-900 border-neutral-800' : 'text-black border-neutral-300 bg-white'" class="transition **:transition-colors **:duration-150 duration-150 p-4 flex flex-col gap-4 border {{'scale-110 border-orange-600/50 bg-orange-600/5' if plan.name=='Pro'}} shadow-sm rounded-lg">
+            <div :class="isDark ? 'bg-neutral-900 border-neutral-800' : 'text-black border-neutral-300 bg-white'" class="transition **:transition-colors **:duration-150 duration-150 p-4 flex flex-col gap-4 border {{'scale-105 border-orange-600/50 bg-orange-600/5' if plan.name=='Pro'}} shadow-sm rounded-lg">
                 <div class="flex gap-4 items-center">
                     <p :class="isDark ? 'text-neutral-500' : 'text-neutral-600'" class="tracking-widest">{{plan.name|upper}}</p>
                     <p class="{{'hidden' if plan.name!='Pro'}} text-xs uppercase tracking-widest bg-orange-600 p-1 px-2 rounded-xl">recommended</p>
@@ -59,9 +28,7 @@ Retrieved 2026-07-06, License - CC BY-SA 4.0
                         <div :class="isDark ? 'text-neutral-200' : 'text-neutral-700'" class="flex gap-2"><div class="text-green-500">✓ </div>{{f}}</div>
                     {%endfor%}
                 </div>
-                <a class="p-2 bg-orange-600 text-center {{'hidden' if plan.name=='Free'}} mt-auto font-bold rounded-md">
-                    Upgrade
-                </a>    
+                <a class="p-2 text-white bg-orange-600 text-center {{'hidden' if plan.name=='Free'}} mt-auto font-bold rounded-md">Upgrade</a>    
             </div>
             
         {% endfor %}

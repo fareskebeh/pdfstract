@@ -9,6 +9,14 @@ from payments.models import Plan
 from keymanager.models import ApiKey
 from hashlib import sha256
 import secrets
+import os
+from dotenv import load_dotenv
+import resend
+
+load_dotenv()
+
+RESEND_KEY= os.getenv("RESEND_KEY")
+resend.api_key = RESEND_KEY
 
 def generate_code():
     return random.randint(0000000, 9999999)
@@ -42,7 +50,13 @@ def auth_routes_init(app):
                             return redirect("/login")
                         else:
                             code = generate_code()
-                            print(f"CODE HAS BEEN SENT {email} \nDEBUG: {code}")
+                            #print(f"CODE HAS BEEN SENT {email} \nDEBUG: {code}")
+                            r= resend.Emails.send( {
+                                "from" : "onboarding@resend.dev",
+                                "to" : email,
+                                "subject" : "Your PDFStract verification code",
+                                "html" : f"<p>Copy this code and paste it in the verification input field</p> <h2>{code}</h2>"
+                            })
                             session['pending_verification_email'] = email
                             session['pending_verification_code'] = code
                             return redirect("/verify")
@@ -51,7 +65,13 @@ def auth_routes_init(app):
                         db.session.add(user)
                         db.session.commit()
                         code = generate_code()
-                        print(f"CODE HAS BEEN SENT {email} \nDEBUG: {code}")
+                        #print(f"CODE HAS BEEN SENT {email} \nDEBUG: {code}")
+                        r= resend.Emails.send( {
+                                "from" : "onboarding@resend.dev",
+                                "to" : email,
+                                "subject" : "Your PDFStract verification code",
+                                "html" : f"<p>Copy this code and paste it in the verification input field</p> <h2>{code}</h2>"
+                            })
                         session['pending_verification_email'] = email
                         session['pending_verification_code'] = code
                         return redirect("/verify")
@@ -165,7 +185,12 @@ def auth_routes_init(app):
             url_token = secrets.token_urlsafe(32)
             token = ResetToken(user_id=user.id, hash=sha256(url_token.encode()).hexdigest())
             print(f"RESET LINK: http://127.0.0.1:8000/reset-password?token={url_token}")
-            #I will replace the one above w a email, for prod
+            r= resend.Emails.send( {
+                                "from" : "onboarding@resend.dev",
+                                "to" : email,
+                                "subject" : "Your PDFStract password reset link",
+                                "html" : f"<h1>Visit this link to reset your password</h1> <p>http://127.0.0.1:8000/reset-password?token={url_token}</p>"
+                            })
             db.session.add(token)
             db.session.commit()
 
