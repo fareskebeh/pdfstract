@@ -93,8 +93,6 @@ def auth_routes_init(app):
             code_user = str(request.form.get("code"))
             code_db = str(session.get("pending_verification_code"))
 
-            print(f"DEBUG: code_user={code_user}, code_db={code_db}")
-            
             if code_user == code_db:
                 user = User.query.filter_by(email=email).first()
                 if user:
@@ -169,7 +167,7 @@ def auth_routes_init(app):
 
         plans = Plan.query.all()
         return render_template("pricing.jinja", plans=plans, is_authenticated=is_authenticated)
-    @app.route('/forgot-password', methods=['GET', 'POST'])
+    @app.route('/password-reset', methods=['GET', 'POST'])
     def forgot_pw():
         is_authenticated = True if session.get("email") else False
         if request.method == 'POST':
