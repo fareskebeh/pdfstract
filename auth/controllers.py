@@ -182,7 +182,6 @@ def auth_routes_init(app):
             flash("Email sent, Check your inbox", "success")
             url_token = secrets.token_urlsafe(32)
             token = ResetToken(user_id=user.id, hash=sha256(url_token.encode()).hexdigest())
-            print(f"RESET LINK: http://127.0.0.1:8000/reset-password?token={url_token}")
             r= resend.Emails.send( {
                                 "from" : "onboarding@resend.dev",
                                 "to" : email,
