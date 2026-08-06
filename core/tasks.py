@@ -1,4 +1,3 @@
-import io
 import pymupdf
 from PIL import Image
 import pytesseract
@@ -32,20 +31,22 @@ def extract_text(fp, user_id):
             if user_plan.quota_limit < user.master_quota + len(doc):
                 return {"error": "Not enough quota for this file"}
             text = ""
-            for page in doc:
-                content = page.get_text()
-                if content:
-                    text += content + "pagebreak_pagebreak"
-                else:
-                    pix = page.get_pixmap(dpi=128)
-                    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                    ocr_text = pytesseract.image_to_string(img, lang='eng')
-                    if ocr_text:
-                        text += ocr_text
-            
-            user.master_quota += len(doc)
-            session.commit()
-            
+            try:
+                for page in doc:
+                    content = page.get_text()
+                    if content:
+                        text += content + "pagebreak_pagebreak"
+                    else:
+                        pix = page.get_pixmap(dpi=128)
+                        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                        ocr_text = pytesseract.image_to_string(img, lang='eng')
+                        if ocr_text:
+                            text += ocr_text
+                user.master_quota += len(doc)
+                session.commit()
+            except Exception as e:
+                session.rollback() 
+                return {"error": "An error occurred while processing the document, Try again later"}
             page_lst = text.split("pagebreak_pagebreak")
             return {"text": page_lst}
     except Exception as e:
