@@ -24,17 +24,27 @@ def extract_text(fp, user_id):
                 return {"error": "User not found"}
             
             user_plan = session.query(Plan).get(user.plan_id)
-            
-            if user.master_quota >= user_plan.quota_limit:
-                return {"error": "Quota limit reached"}
-            
-            if user_plan.quota_limit < user.master_quota + len(doc):
-                return {"error": "Not enough quota for this file"}
+            remaining=user_plan.quota_limit - user.master_quota
+            status=""
+            pages_to_process=0
+            if user.plan_id ==1:
+                if remaining <=0:
+                    status="error"
+                    return {"error" : "Quota limit has been reached, Upgrade to a paid plan to process overage or wait until the limit resets", "status": status, "code": 429}
+                if remaining < len(doc):
+                    status="partial"
+                    pages_to_process=remaining
+            else:
+                status="complete"
+                pages_to_process = len(doc)
             text = ""
+            processed = 0
             try:
-                for page in doc:
+                for i in range(pages_to_process):
+                    page=doc[i]
                     content = page.get_text()
                     if content:
+                        processed+=1
                         text += content + "pagebreak_pagebreak"
                     else:
                         pix = page.get_pixmap(dpi=128)
@@ -42,13 +52,15 @@ def extract_text(fp, user_id):
                         ocr_text = pytesseract.image_to_string(img, lang='eng')
                         if ocr_text:
                             text += ocr_text
-                user.master_quota += len(doc)
+                            processed+=1
+                user.master_quota += processed
                 session.commit()
             except Exception as e:
+                status="error"
                 session.rollback() 
-                return {"error": "An error occurred while processing the document, Try again later"}
+                return {"error": "An error occurred while processing the document, Try again.", "status":status, "code": 500}
             page_lst = text.split("pagebreak_pagebreak")
-            return {"text": page_lst}
+            return {"text": page_lst, "pages_processed": processed, "status":status, "code": 200}
     except Exception as e:
         session.rollback()
         raise e

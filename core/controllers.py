@@ -56,7 +56,6 @@ def core_routes_init(app):
 
             if job.is_finished:
                 return {
-                    "status": "done",
                     "result": job.result
                 }
             elif job.is_queued:

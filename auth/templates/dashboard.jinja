@@ -3,7 +3,7 @@
 {% block content %}
 
     {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) or (user.plan_id==3 and user.key_count < 20) %}
-    {% set limit= (300 if user.plan_id == 1 else 25000 if user.plan_id == 2 else 500000) %}
+    {% set limit= (50 if user.plan_id == 1 else 500 if user.plan_id == 2 else 2500 if user.plan_id==3 else 10000) %}
     {% set percent = (user.master_quota / limit) * 100 %}
     {% set bar_color = 'bg-green-500' %}
     {% if percent >= 80 %}
@@ -35,7 +35,7 @@
             <p class="font-black text-3xl">Manage Your API Keys</p>
             <span :class="isDark ? 'text-neutral-400' : 'text-neutral-600'" class="text-xl">{{ email }}</span>
             <span class="{{ 'text-green-500 bg-green-500/20' if user.plan_id == 1 else ' bg-indigo-500/20 text-indigo-500' if user.plan_id == 2 else 'text-orange-600 bg-orange-500/20' }} p-2 text-sm rounded-3xl font-bold">{{
-                'Free' if user.plan_id == 1 else 'Starter' if user.plan_id == 2 else 'Pro'
+                'Free' if user.plan_id == 1 else 'Starter' if user.plan_id == 2 else 'Pro' if user.plan_id == 3 else 'Business'
             }}</span>
 
             <div class="py-4 space-y-2">
