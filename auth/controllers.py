@@ -12,6 +12,7 @@ import secrets
 import os
 from dotenv import load_dotenv
 import resend
+from extensions import limiter
 
 load_dotenv()
 
@@ -22,7 +23,9 @@ def generate_code():
     return random.randint(0000000, 9999999)
 
 def auth_routes_init(app):
+    
     @app.route("/home", methods=["GET"])
+    @limiter.limit('100/minute')
     def home():
         is_authenticated = True if session.get("email") else False
         return render_template("home.jinja", is_authenticated=is_authenticated)
@@ -32,6 +35,7 @@ def auth_routes_init(app):
         return redirect("/home")
     
     @app.route('/register', methods=['GET', 'POST'])
+    @limiter.limit('5/hour')
     def register():
         is_authenticated = True if session.get("email") else False
         if is_authenticated:
@@ -83,6 +87,7 @@ def auth_routes_init(app):
         return render_template('register.jinja', is_authenticated=is_authenticated)
 
     @app.route("/verify", methods=["GET", "POST"])
+    @limiter.limit('10/hour')
     def verify_email():
         email = session.get("pending_verification_email")
         if not email:
@@ -112,6 +117,7 @@ def auth_routes_init(app):
         return render_template("verify.jinja", is_authenticated=True if email else False)
 
     @app.route('/login', methods=['GET', 'POST'])
+    @limiter.limit('10/hour')
     def login():
         is_authenticated = True if session.get("email") else False
         if is_authenticated:
@@ -149,6 +155,7 @@ def auth_routes_init(app):
         return redirect(url_for('home'))
     
     @app.route('/dashboard')
+    @limiter.limit('100/minute')
     def dashboard():
         is_authenticated = True if session.get("email") else False
         if not is_authenticated:
@@ -162,12 +169,15 @@ def auth_routes_init(app):
         return render_template("dashboard.jinja", is_authenticated=is_authenticated, email=session.get("email"), user_keys=user_keys, user=user)
 
     @app.route('/pricing')
+    @limiter.limit('100/minute')
     def pricing():
         is_authenticated = True if session.get("email") else False
 
         plans = Plan.query.all()
         return render_template("pricing.jinja", plans=plans, is_authenticated=is_authenticated)
+    
     @app.route('/password-reset', methods=['GET', 'POST'])
+    @limiter.limit('5/hour')
     def forgot_pw():
         is_authenticated = True if session.get("email") else False
         if request.method == 'POST':
@@ -194,6 +204,7 @@ def auth_routes_init(app):
         return render_template('forgot-password.jinja', is_authenticated=is_authenticated)
     
     @app.route('/reset-password', methods=['GET', 'POST'])
+    @limiter.limit('3/hour')
     def reset_password():
         is_authenticated = True if session.get("email") else False
         
@@ -229,8 +240,9 @@ def auth_routes_init(app):
                         db.session.commit()
                         flash('Password successfully reset', 'success')
                         return redirect('/login')
-                    
+
     @app.route('/settings', methods=['GET'])
+    @limiter.limit('100/minute')
     def settings_get():
         email = session.get('email')
         if not email:

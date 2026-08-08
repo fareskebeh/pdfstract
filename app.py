@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify, render_template
 from dotenv import load_dotenv
 import os
 from core.controllers import core_routes_init
@@ -9,6 +9,7 @@ from db.extensions import db
 from auth.models import User
 from keymanager.models import ApiKey
 from payments.models import Plan
+from extensions import limiter
 
 load_dotenv()
 
@@ -22,10 +23,22 @@ db.init_app(app)
 
 migrate = Migrate(app, db)
 
+limiter.init_app(app)
 
 core_routes_init(app)
 auth_routes_init(app)
 key_routes_init(app)
+
+@app.errorhandler(429)
+def ratelimit_handler():
+    return jsonify({
+        "error": "Too many requests",
+        "message": "Rate limit exceeded. Please slow down.",
+    }), 429
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return render_template("429.jinja"), 429
 
 DEBUG=True if os.getenv("DEBUG") == 'True' else False
 if __name__ == "__main__":
