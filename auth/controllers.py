@@ -58,7 +58,7 @@ def auth_routes_init(app):
                             r= resend.Emails.send( {
                                 "from" : "onboarding@resend.dev",
                                 "to" : email,
-                                "subject" : "Your PDFStract verification code",
+                                "subject" : "Your Bibliove verification code",
                                 "html" : f"<p>Copy this code and paste it in the verification input field</p> <h2>{code}</h2>"
                             })
                             session['pending_verification_email'] = email
@@ -73,7 +73,7 @@ def auth_routes_init(app):
                         r= resend.Emails.send( {
                                 "from" : "onboarding@resend.dev",
                                 "to" : email,
-                                "subject" : "Your PDFStract verification code",
+                                "subject" : "Your Bibliove verification code",
                                 "html" : f"<p>Copy this code and paste it in the verification input field</p> <h2>{code}</h2>"
                             })
                         session['pending_verification_email'] = email
@@ -195,7 +195,7 @@ def auth_routes_init(app):
             r= resend.Emails.send( {
                                 "from" : "onboarding@resend.dev",
                                 "to" : email,
-                                "subject" : "Your PDFStract password reset link",
+                                "subject" : "Your Bibliove password reset link",
                                 "html" : f"<h1>Visit this link to reset your password</h1> <p>http://127.0.0.1:8000/reset-password?token={url_token}</p>"
                             })
             db.session.add(token)

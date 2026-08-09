@@ -1,6 +1,3 @@
-import io
-import os
-from auth.models import User
 from keymanager.models import ApiKey
 from hashlib import sha256
 from flask import request, jsonify, make_response

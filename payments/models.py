@@ -1,5 +1,4 @@
 from db.extensions import db
-from enum import Enum
 from sqlalchemy import JSON
 
 class Plan(db.Model):
