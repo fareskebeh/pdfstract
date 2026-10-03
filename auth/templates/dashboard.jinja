@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    {% set can_create = (user.plan_id == 1 and user.key_count < 1) or (user.plan_id == 2 and user.key_count < 3) or (user.plan_id==3 and user.key_count < 20) %}
+    {% set can_create = (user.plan_id == 1 and user.key_count < 1) or user.plan_id==2 or user.plan_id==3 or user.plan_id==4%}
     {% set limit= (50 if user.plan_id == 1 else 500 if user.plan_id == 2 else 2500 if user.plan_id==3 else 10000) %}
     {% set percent = (user.master_quota / limit) * 100 %}
     {% set bar_color = 'bg-green-500' %}
@@ -34,7 +34,7 @@
         <div :class="isDark ? 'text-white border-neutral-800 transition duration-150' : 'text-neutral-800 border-neutral-300'" class="sm:border-r border-b p-8 pt-24 space-y-2">
             <p class="font-black text-3xl">Manage Your API Keys</p>
             <span :class="isDark ? 'text-neutral-400' : 'text-neutral-600'" class="text-xl">{{ email }}</span>
-            <span class="{{ 'text-green-500 bg-green-500/20' if user.plan_id == 1 else ' bg-indigo-500/20 text-indigo-500' if user.plan_id == 2 else 'text-orange-600 bg-orange-500/20' }} p-2 text-sm rounded-3xl font-bold">{{
+            <span class="{{ 'text-green-500 bg-green-500/20' if user.plan_id == 1 else ' bg-indigo-500/20 text-indigo-500' if user.plan_id == 2 else 'text-purple-500 bg-purple-500/20' if user.plan_id==3 else 'text-orange-600 bg-orange-500/20' }} p-2 text-sm rounded-3xl font-bold">{{
                 'Free' if user.plan_id == 1 else 'Starter' if user.plan_id == 2 else 'Pro' if user.plan_id == 3 else 'Business'
             }}</span>
 
@@ -52,7 +52,7 @@
                 </div>
                 {% endfor %}
                 
-                <a href="{{ '/keys/create' if can_create else '/pricing' if not (user.plan_id==3 and user.key_count<=20) }}" 
+                <a href="{{ '/keys/create' if can_create else '/pricing' }}" 
                 class="mt-2 rounded-lg w-full p-4 flex items-center justify-center shadow-md transition duration-150 {{ 'cursor-pointer hover:opacity-90' if can_create }}" 
                 :class="isDark ? 'bg-neutral-700' : 'bg-neutral-300'">
                     {% if can_create %}
@@ -60,9 +60,7 @@
                     <i class="fas fa-plus text-2xl"></i>
                     {% else %}
                     <p>
-                        {% if user.plan_id == 3 %}
-                            You've reached the maximum of 20 keys for your plan
-                        {% else %}
+                        {% if user.plan_id == 1 %}
                             Upgrade to get more keys and quota
                         {% endif %}
                     </p>

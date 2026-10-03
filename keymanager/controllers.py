@@ -19,10 +19,12 @@ def key_routes_init(app):
     def create_key():
         is_authenticated=True if session.get("email") else False 
         if not is_authenticated:
-            return jsonify({"message": "Unable to create key, requires authentication"})
+            return make_response({"message": "Unable to create key, requires authentication"}, 401)
         user = User.query.filter(User.email==session.get("email")).first()
         if not user:
             return redirect("/")
+        if user.plan_id==1 and user.key_count>=1:
+            return make_response({"message": "Only one key is available for Free plan, Upgrade to a paid plan to create more."}, 402)
         raw=secrets.token_urlsafe(32)
         key = ApiKey(
             key_hash= sha256(raw.encode()).hexdigest(),

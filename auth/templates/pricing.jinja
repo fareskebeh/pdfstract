@@ -16,7 +16,7 @@
 
     <div class="h-full w-full flex flex-col sm:flex-row justify-center sm:px-12 *:flex-1 gap-8 sm:gap-10 ">
         {% for plan in plans %}
-            <div :class="isDark ? 'bg-neutral-900 border-neutral-800' : 'text-black border-neutral-300 bg-white'" class="transition **:transition-colors **:duration-150 duration-150 p-4 flex flex-col gap-4 border {{'scale-105 border-orange-600/50 bg-orange-600/5' if plan.name=='Pro'}} shadow-sm rounded-lg">
+            <div :class="isDark ? 'bg-neutral-900 border-neutral-800' : 'text-black border-neutral-300 {{'bg-white' if plan.name != 'Pro'}}'" class="transition **:transition-colors **:duration-150 duration-150 p-4 flex flex-col gap-4 border {{'scale-105 border-orange-600/50 bg-orange-600/5' if plan.name=='Pro'}} shadow-sm rounded-lg">
                 <div class="flex gap-4 items-center">
                     <p :class="isDark ? 'text-neutral-500' : 'text-neutral-600'" class="tracking-widest">{{plan.name|upper}}</p>
                     <p class="{{'hidden' if plan.name!='Pro'}} text-xs uppercase tracking-widest bg-orange-600 p-1 px-2 rounded-xl">recommended</p>
